@@ -1,0 +1,119 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ItzsAmethyst | Portfolio</title>
+<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.1/bundles/skinview3d.bundle.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'Segoe UI',sans-serif;background:#12071f;color:#fff;overflow-x:hidden}
+#bg{position:fixed;inset:0;z-index:-1}
+#load{position:fixed;inset:0;background:#12071f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99;transition:opacity .8s}
+.bar{width:260px;height:14px;border:2px solid #b77cff;margin-top:15px}.bar div{height:100%;width:0;background:#b77cff;transition:width .1s}
+section{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+h1{font-size:3.2em;margin:5px;color:#e0b8ff;text-shadow:0 0 20px #9b4dff}h2{font-size:2.2em;color:#e0b8ff}
+#type{min-height:1.5em;font-size:1.2em;opacity:.9}
+canvas#skin{cursor:grab}.hint{font-size:.85em;opacity:.6}
+.btns button,.btn{margin:8px;padding:12px 24px;font-size:1em;border:2px solid #b77cff;border-radius:10px;background:rgba(155,77,255,.25);color:#fff;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s}
+.btns button:hover,.btn:hover{background:#9b4dff;transform:scale(1.06)}
+.grid{display:flex;flex-wrap:wrap;gap:25px;justify-content:center}
+.flip{width:230px;height:260px;perspective:900px;cursor:pointer;opacity:0;transform:translateY(40px);transition:.7s}
+.flip.vis{opacity:1;transform:none}
+.inner{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.f,.b{position:absolute;inset:0;border-radius:16px;border:2px solid #9b4dff;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;background:rgba(40,15,70,.85)}
+.b{transform:rotateY(180deg);background:rgba(90,30,150,.9)}
+.icon{font-size:3em}.num{font-size:2.4em;font-weight:bold;color:#e0b8ff}
+.discord{background:#5865F2;border-color:#5865F2;font-size:1.2em}
+#toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#9b4dff;padding:10px 20px;border-radius:8px;opacity:0;transition:.4s}
+nav{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:5}
+nav a{width:14px;height:14px;border-radius:50%;border:2px solid #b77cff;display:block}nav a.act{background:#b77cff}
+
+#cur{position:fixed;width:26px;height:26px;border-radius:50%;border:2px solid #e0b8ff;pointer-events:none;transform:translate(-50%,-50%);z-index:100;transition:width .2s,height .2s;box-shadow:0 0 15px #9b4dff}
+#prog{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,#9b4dff,#ff7ad9);z-index:101;width:0}
+.skill{width:min(500px,90vw);margin:12px auto;text-align:left}.track{height:16px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#9b4dff,#ff7ad9);transition:width 1.5s}
+.tl{border-left:3px solid #9b4dff;max-width:520px;text-align:left;padding-left:25px}.ev{margin:22px 0;position:relative;opacity:0;transform:translateX(-30px);transition:.6s}.ev.vis{opacity:1;transform:none}.ev:before{content:'';position:absolute;left:-34px;top:4px;width:14px;height:14px;border-radius:50%;background:#e0b8ff;box-shadow:0 0 10px #9b4dff}
+.fact{min-height:3em;font-size:1.2em;max-width:500px}
+
+.grid{max-width:800px}
+#top{position:fixed;left:20px;bottom:20px;width:48px;height:48px;border-radius:50%;border:2px solid #b77cff;background:rgba(155,77,255,.3);color:#fff;font-size:1.4em;cursor:pointer;opacity:0;transition:.3s;z-index:6}
+#snd{position:fixed;left:20px;top:20px;padding:8px 14px;border-radius:8px;border:2px solid #b77cff;background:rgba(155,77,255,.3);color:#fff;cursor:pointer;z-index:6}
+.conf{position:fixed;width:10px;height:10px;pointer-events:none;z-index:200}
+.stats{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;margin-top:25px}.stats div{background:rgba(255,255,255,.07);border:1px solid #9b4dff;border-radius:12px;padding:12px 20px}.stats b{display:block;font-size:1.6em;color:#e0b8ff}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div id="load"><h2>Mining portfolio...</h2><div class="bar"><div id="pb"></div></div></div>
+<div id="cur"></div><button id="top" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button><button id="snd" onclick="snd=!snd;this.textContent=snd?'🔊 Sound On':'🔇 Sound Off'">🔇 Sound Off</button><div id="prog"></div><nav><a href="#s1"></a><a href="#s2"></a><a href="#s4"></a><a href="#s5"></a><a href="#s6"></a><a href="#s3"></a></nav>
+
+<section id="s1">
+<canvas id="skin"></canvas>
+<p class="hint">Drag to spin me around</p>
+<h1>ItzsAmethyst</h1><div id="type"></div>
+<div class="btns"><button onclick="anim('walk')">Walk</button><button onclick="anim('run')">Run</button><button onclick="anim('wave')">Wave</button><button onclick="copyName()">Copy IGN</button></div>
+<div class="stats"><div><b>$30B</b>Earned</div><div><b>2,000</b>Subscribers</div><div><b>250</b>Discord</div><div><b>LT3</b>Crystal PvP</div></div>
+</section>
+
+<section id="s2"><h2>What I've Done</h2><p class="hint">Click a card to flip it</p>
+<div class="grid">
+<div class="flip"><div class="inner"><div class="f"><div class="icon">⏱️</div><div class="num" data-n="50">0</div>Days of Playtime</div><div class="b">50 days played on Donut SMP. I know the economy, the rules, the community and how the server runs day to day.</div></div></div>
+<div class="flip"><div class="inner"><div class="f"><div class="icon">🖥️</div><div class="num">Owner</div>Minecraft Server</div><div class="b">I created and run my own Minecraft server. I handle the setup, plugins, settings and rules, and I look after the players.</div></div></div>
+<div class="flip"><div class="inner"><div class="f"><div class="icon">💬</div><div class="num" data-n="250">0</div>Discord Members</div><div class="b">I built a Discord community of 250 members. I set up the channels and roles and keep it active and friendly.</div></div></div>
+<div class="flip"><div class="inner"><div class="f"><div class="icon">🎥</div><div class="num">Streamer</div>Content Creator</div><div class="b">I stream Donut SMP to 2,000 subscribers and keep making content for the community.</div></div></div>
+<div class="flip"><div class="inner"><div class="f"><div class="icon">💰</div><div class="num">$30B</div>Earned on Donut SMP</div><div class="b">I've made 30 billion on Donut SMP by trading, grinding and working the economy.</div></div></div>
+<div class="flip"><div class="inner"><div class="f"><div class="icon">⚔️</div><div class="num">LT3</div>Crystal PvPer</div><div class="b">I'm ranked Low Tier 3 in Crystal PvP, with quick reactions, smart anchor and crystal play, and plenty of practice.</div></div></div>
+</div></section>
+
+<section id="s4"><h2>Skills</h2>
+<div class="skill">Community Management<div class="track"><div class="fill" data-w="95"></div></div></div>
+<div class="skill">Server Setup & Plugins<div class="track"><div class="fill" data-w="85"></div></div></div>
+<div class="skill">Streaming & Content<div class="track"><div class="fill" data-w="90"></div></div></div>
+<div class="skill">Crystal PvP<div class="track"><div class="fill" data-w="88"></div></div></div>
+<div class="skill">Helping Players<div class="track"><div class="fill" data-w="92"></div></div></div>
+</section>
+<section id="s5"><h2>My Journey</h2><div class="tl">
+<div class="ev"><b>Started on Donut SMP</b><br>Jumped in and started learning the server.</div>
+<div class="ev"><b>Started Streaming</b><br>Began streaming Donut SMP.</div>
+<div class="ev"><b>Built My Discord</b><br>Grew a community to 250 members.</div>
+<div class="ev"><b>Made My Own Server</b><br>Created and ran my own Minecraft server.</div>
+<div class="ev"><b>2,000 Subscribers</b><br>Hit 2,000 subscribers and still growing.</div>
+</div></section>
+<section id="s6"><h2>Donut SMP Fun Facts</h2><p class="fact" id="fact">Click the button!</p><div class="btns"><button onclick="fact()">🎲 Random Fact</button></div></section>
+<section id="s3"><h2>Discord</h2>
+<p style="max-width:600px;font-size:1.1em">250 members and growing. Come hang out!</p>
+<a class="btn discord" href="https://discord.gg/XMTKsf4nz" target="_blank">💬 Join</a>
+</section>
+<div id="toast">Copied ItzsAmethyst!</div>
+
+<script>
+// loading
+let p=0,pb=document.getElementById('pb');let li=setInterval(()=>{p+=4;pb.style.width=p+'%';if(p>=100){clearInterval(li);let l=document.getElementById('load');l.style.opacity=0;setTimeout(()=>l.remove(),800);typeIt()}},50);
+// particles
+const c=document.getElementById('bg'),x=c.getContext('2d');function rs(){c.width=innerWidth;c.height=innerHeight}rs();onresize=rs;
+let ps=Array.from({length:70},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*5+2,v:Math.random()*.6+.2}));
+let mx=-999,my=-999;onmousemove=e=>{mx=e.clientX;my=e.clientY};
+(function d(){x.fillStyle='#12071f';x.fillRect(0,0,c.width,c.height);ps.forEach(q=>{q.y-=q.v;if(q.y<0)q.y=c.height;let dx=q.x-mx,dy=q.y-my;if(dx*dx+dy*dy<8000){q.x+=dx*.05;q.y+=dy*.05}x.fillStyle='rgba(183,124,255,.6)';x.fillRect(q.x,q.y,q.s,q.s)});requestAnimationFrame(d)})();
+// 3D skin
+let v;try{v=new skinview3d.SkinViewer({canvas:document.getElementById('skin'),width:300,height:380,});v.loadSkin('skin.png').catch(()=>v.loadSkin('https://minotar.net/skin/itzsamethyst')).catch(()=>v.loadSkin('https://mc-heads.net/skin/itzsamethyst')).catch(()=>{document.getElementById('skin').outerHTML='<img src="https://minotar.net/armor/body/itzsamethyst/300.png" height="300">'});v.autoRotate=true;v.animation=new skinview3d.IdleAnimation();}catch(e){document.getElementById('skin').outerHTML='<img src="https://minotar.net/armor/body/itzsamethyst/300.png" height="300">'}
+function anim(a){if(!v)return;v.animation=a=='walk'?new skinview3d.WalkingAnimation():a=='run'?new skinview3d.RunningAnimation():new skinview3d.WaveAnimation()}
+// typewriter
+const lines=['Minecraft Player','Server Owner','Community Builder','Streamer'];let li2=0;
+function typeIt(){let t=lines[li2],i=0,el=document.getElementById('type');let w=setInterval(()=>{el.textContent=t.slice(0,++i);if(i>=t.length){clearInterval(w);setTimeout(()=>{li2=(li2+1)%lines.length;typeIt()},1600)}},70)}
+function copyName(){navigator.clipboard.writeText('ItzsAmethyst');let t=document.getElementById('toast');t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1500)}
+// cards
+document.querySelectorAll('.flip').forEach(f=>f.onclick=()=>f.classList.toggle('on'));
+const ob=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;
+ if(e.target.classList.contains('flip')){let i=[...document.querySelectorAll('.flip')].indexOf(e.target);setTimeout(()=>e.target.classList.add('vis'),i*200);let n=e.target.querySelector('[data-n]');if(n&&!n.done){n.done=1;let g=+n.dataset.n,k=0;let ci=setInterval(()=>{k+=Math.ceil(g/40);if(k>=g){k=g;clearInterval(ci)}n.textContent=k},30)}}
+ else{document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')=='#'+e.target.id))}}),{threshold:.4});
+document.querySelectorAll('.flip,section').forEach(e=>ob.observe(e));
+
+const cur=document.getElementById('cur');addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px'});
+document.querySelectorAll('button,a,.flip').forEach(b=>{b.addEventListener('mouseenter',()=>{cur.style.width=cur.style.height='46px'});b.addEventListener('mouseleave',()=>{cur.style.width=cur.style.height='26px'})});
+addEventListener('scroll',()=>{document.getElementById('prog').style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%'});
+const o2=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;if(e.target.classList.contains('fill'))e.target.style.width=e.target.dataset.w+'%';else e.target.classList.add('vis')}),{threshold:.3});
+document.querySelectorAll('.fill,.ev').forEach(e=>o2.observe(e));
+document.querySelectorAll('section').forEach(s=>ob.observe(s));
+const facts=['Donut SMP was created by the streamer DrDonut, whose real name is Nate Filson.','Donut SMP launched in 2021.','When it first started, Donut SMP was a hardcore server, so dying got you banned for good.','Donut SMP works on both Java and Bedrock.','Donut SMP has had tens of thousands of players online at once.','Donut SMP is known as a semi-anarchy server.','In 2026, Donut SMP beat Hypixel in weekly player numbers for months.'];
+function fact(){let f=document.getElementById('fact');f.style.opacity=0;setTimeout(()=>{f.textContent=facts[Math.floor(Math.random()*facts.length)];f.style.opacity=1},250)}
+document.getElementById('fact').style.transition='opacity .25s';
+
+let snd=false,ac;function blip(f){if(!snd)return;ac=ac||new AudioContext();let t=ac.currentTime;[0,0.07].forEach((d,i)=>{let o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=(i?1.5:1)*(f+300);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.12,t+d+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d+.35);o.connect(g);g.connect(ac.destination);o.start(t+d);o.stop(t+d+.4)})}
+document.querySelectorAll('button,.flip').forEach(b=>b.addEventListener('click',()=>blip(600+Math.random()*300)));
+document.querySelectorAll('.flip').forEach(f=>{f.addEventListener('mousemove',e=>{if(f.classList.contains('on'))return;let r=f.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;f.querySelector('.inner').style.transform=`rotateY(${x*20}deg) rotateX(${-y*20}deg)`});f.addEventListener('mouseleave',()=>{f.querySelector('.inner').style.transform=''});f.addEventListener('click',()=>{f.querySelector('.inner').style.transform=''})});
+addEventListener('scroll',()=>{document.getElementById('top').style.opacity=scrollY>300?1:0});
+document.querySelector('.discord').addEventListener('click',e=>{for(let i=0;i<60;i++){let c=document.createElement('div');c.className='conf';c.style.background=['#9b4dff','#ff7ad9','#e0b8ff','#5865F2'][i%4];c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';document.body.appendChild(c);let a=Math.random()*6.28,s=Math.random()*8+4,vx=Math.cos(a)*s,vy=Math.sin(a)*s-6,x=e.clientX,y=e.clientY,t=0;(function m(){t++;vy+=.4;x+=vx;y+=vy;c.style.left=x+'px';c.style.top=y+'px';c.style.opacity=1-t/60;if(t<60)requestAnimationFrame(m);else c.remove()})()}});
+</script></body></html>
